@@ -1,0 +1,23 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for nodes.
+ */
+function custom_email_node_insert(EntityInterface $node) {
+  $config = \Drupal::config('custom_email.settings');
+  $subject = $config->get('email_subject');
+  $message = $config->get('email_message');
+
+  // Get the node author's email.
+  $author = $node->getOwner();
+  $to = $author->getEmail();
+
+  // Send the email.
+  $params = [
+    'subject' => $subject,
+    'message' => $message,
+  ];
+  \Drupal::service('plugin.manager.mail')->mail('system', 'mail', $to, \Drupal::languageManager()->getDefaultLanguage()->getId(), $params);
+}

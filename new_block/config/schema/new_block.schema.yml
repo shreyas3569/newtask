@@ -1,0 +1,7 @@
+block.settings.new_block_new_block:
+  type: block_settings
+  label: 'new block block'
+  mapping:
+    foo:
+      type: string
+      label: Foo

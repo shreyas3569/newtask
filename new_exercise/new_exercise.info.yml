@@ -1,0 +1,4 @@
+name: 'new exercise' #this is the name of the module
+description: 'Custom Task' #the description of the module
+type: module #this shows the type of the folder
+core_version_requirement: ^9 || ^10 #minimum version of the drupal instance

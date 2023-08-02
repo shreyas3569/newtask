@@ -1,0 +1,45 @@
+new_exercise.hello_world: #this is the route name for  the controller
+  path: '/guys' #path
+  defaults:
+    _controller: '\Drupal\new_exercise\Controller\CustomController::hello' #class and function
+    _title: 'HEY GUYSSSSS' #title
+  requirements:
+    _permission: 'access content' #providing permissions here
+
+new_exercise.world: #this is the route name for  the controller
+  path: '/habibi' #path
+  defaults:
+    _controller: '\Drupal\new_exercise\Controller\MyController::helloo' #class and function
+    _title: 'How are you brother' #title
+  requirements:
+    _permission: 'access content' #providing permissions here
+
+new_exercise.node_details:
+  path: 'node/{node}/details'
+  defaults:
+    _controller: '\Drupal\new_exercise\Controller\NodeController::newTask'
+  options:
+    _admin_route: true
+    parameters:
+      node:
+        type: entity:node
+  requirements:
+    _permission: 'node controller'
+
+new_exercise.custom_form: #this is the route name  for custom form page
+  path: "/details" #path
+  defaults:
+    _form: '\Drupal\new_exercise\Form\CustomForm' #class and function
+    _title: "Custom Form to get user details" #title
+  requirements:
+    _permission: 'access content' #providing permission here
+
+
+custom_email_notification.settings_form:
+  path: '/new'
+  defaults:
+    _form: '\Drupal\new_exercise\Form\CustomNotifyForm'
+    _title: 'Custom Email Settings'
+  requirements:
+    _permission: 'administer site configuration'
+
