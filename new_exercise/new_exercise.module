@@ -1,23 +1,62 @@
 <?php
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Implements hook_ENTITY_TYPE_insert() for nodes.
+ * Implements hook_mail_alter().
  */
-function custom_email_node_insert(EntityInterface $node) {
-  $config = \Drupal::config('custom_email.settings');
-  $subject = $config->get('email_subject');
-  $message = $config->get('email_message');
+function new_exercise_mail_alter(&$message) {
+  $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+}
 
-  // Get the node author's email.
-  $author = $node->getOwner();
-  $to = $author->getEmail();
+/**
+ * Implements hook_entity_insert().
+ */
+function new_exercise_entity_insert(EntityInterface $entity) {
+  $mailManager = \Drupal::service('plugin.manager.mail');
 
-  // Send the email.
-  $params = [
-    'subject' => $subject,
-    'message' => $message,
+  $module = 'new_exercise';
+  $key = 'create_page';
+  $to = \Drupal::currentUser()->getEmail();
+  $config = \Drupal::config('new_exercise.settings');
+  $message = $config->get('subject');
+  $text = $config->get('text')['value'];
+  $token_service = \Drupal::token();
+  $sub_message = $token_service->replace($message, ['node' => $entity], ['clear' => TRUE]);
+  $sub_text = $token_service->replace($text, ['node' => $entity], ['clear' => TRUE]);
+  $params['subject'] = $sub_message;
+  $params['body'] = $sub_text;
+  $langcode = \Drupal::currentUser()->getPreferredLangcode();
+  $send = TRUE;
+
+  $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+  if ($result['result'] !== TRUE) {
+
+    \Drupal::messenger()->addMessage(t('There was a problem sending your message and it was not sent'), 'error');
+    // drupal_set_message.
+  }
+  else {
+
+    \Drupal::messenger()->addMessage(t('There was a problem sending your message and it was not sent'), 'status');
+    // drupal_set_message(t('Your message has been sent.'));.
+  }
+
+}
+
+/**
+ * Implements hook_mail().
+ */
+function new_exercise_mail($key, &$message, $params) {
+  $options = [
+    'langcode' => $message['langcode'],
   ];
-  \Drupal::service('plugin.manager.mail')->mail('system', 'mail', $to, \Drupal::languageManager()->getDefaultLanguage()->getId(), $params);
+
+  switch ($key) {
+    case 'create_page':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Page created: @title', ['@title' => $params['node_title']], $options);
+      $message['body'][] = $params['message'];
+      break;
+  }
 }

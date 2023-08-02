@@ -34,12 +34,10 @@ new_exercise.custom_form: #this is the route name  for custom form page
   requirements:
     _permission: 'access content' #providing permission here
 
-
-custom_email_notification.settings_form:
-  path: '/new'
+new_exercise.token_task:
+  path: '/token'
   defaults:
-    _form: '\Drupal\new_exercise\Form\CustomNotifyForm'
-    _title: 'Custom Email Settings'
+    _form: '\Drupal\new_exercise\Form\TokenForm'
+    _title: 'token Form'
   requirements:
-    _permission: 'administer site configuration'
-
+    _permission: 'access content'

@@ -24,6 +24,8 @@ class CustomForm extends FormBase {
    */
   public function __construct(EntityTypeManagerInterface $entityTypeManager) {
     $this->entityTypeManager = $entityTypeManager;
+    $this->account = $account;
+    $this->database = $database;
   }
 
   /**
@@ -31,7 +33,9 @@ class CustomForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('current_user'),
+      $container->get('database')
     );
   }
 
